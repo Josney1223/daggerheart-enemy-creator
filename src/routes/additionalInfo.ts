@@ -1,4 +1,6 @@
-interface enemy {
+import { AllPerks, type Perk } from "./perks"
+
+interface enemyPatterns {
     Dificulty: Array<number>,
     MajorThreshold: Array<number>,
     SevereThreshold: Array<number>,
@@ -6,10 +8,22 @@ interface enemy {
     Stress: Array<number>,
     ATK: Array<number>,
     DamageAverage: string,
-    DicePools: Array<string>
+    DicePools: Array<string>,
+    Perks: Array<Perk | undefined>
 }
 
-const defaultEnemys: Map<string, Map<number, enemy>> = new Map()
+interface enemy {
+    Dificulty: number,
+    MajorThreshold: number,
+    SevereThreshold: number,
+    HP: number,
+    Stress: number,
+    ATK: number,
+    DamageAverage: string,
+    DicePools: string
+}
+
+const defaultEnemys: Map<string, Map<number, enemyPatterns>> = new Map()
 
 // "Bruiser",
 // "Horde",
@@ -21,7 +35,7 @@ const defaultEnemys: Map<string, Map<number, enemy>> = new Map()
 // "Standard",
 // "Support",
 
-const bruiser: Map<number, enemy> = new Map()
+const bruiser: Map<number, enemyPatterns> = new Map()
 
 bruiser.set(1, {
     Dificulty: [12, 13, 14],
@@ -32,6 +46,7 @@ bruiser.set(1, {
     ATK: [0, 1, 2],
     DamageAverage: "8-11",
     DicePools: ["1d12+2", "1d10+4", "1d8+6"],
+    Perks: [AllPerks.get("Momentum"), AllPerks.get("Ramp Up"), AllPerks.get("Slow"), AllPerks.get("Terrifying"), AllPerks.get("Roar")]
 })
 
 bruiser.set(2, {
@@ -43,6 +58,7 @@ bruiser.set(2, {
     ATK: [2, 3, 4],
     DamageAverage: "12-16",
     DicePools: ["2d12+3", "2d10+4", "2d8+6"],
+    Perks: [AllPerks.get("Momentum"), AllPerks.get("Ramp Up"), AllPerks.get("Slow"), AllPerks.get("Terrifying"), AllPerks.get("Roar")]
 })
 
 bruiser.set(3, {
@@ -54,6 +70,7 @@ bruiser.set(3, {
     ATK: [3, 4, 5],
     DamageAverage: "18-22",
     DicePools: ["3d12+1", "3d10+4", "3d8+8"],
+    Perks: [AllPerks.get("Momentum"), AllPerks.get("Ramp Up"), AllPerks.get("Slow"), AllPerks.get("Terrifying"), AllPerks.get("Roar")]
 })
 
 bruiser.set(4, {
@@ -65,8 +82,9 @@ bruiser.set(4, {
     ATK: [5, 6, 7, 8],
     DamageAverage: "30-45",
     DicePools: ["4d12+15", "4d10+10", "4d8+12"],
+    Perks: [AllPerks.get("Momentum"), AllPerks.get("Ramp Up"), AllPerks.get("Slow"), AllPerks.get("Terrifying"), AllPerks.get("Roar")]
 })
 
 defaultEnemys.set("Bruiser", bruiser)
 
-export { defaultEnemys, type enemy }
+export { defaultEnemys, type enemyPatterns, type enemy }
