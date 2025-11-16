@@ -5,9 +5,12 @@
         perk: Perk;
         adversaryName?: string;
         adversaryTier?: number;
+        callback: (perkName: string) => void;
+        isAdd: boolean;
     }
 
-    let { perk, adversaryName, adversaryTier }: Props = $props();
+    let { perk, adversaryName, adversaryTier, callback, isAdd }: Props =
+        $props();
 </script>
 
 <div class="mb-2">
@@ -16,6 +19,25 @@
         <p class="font-semibold text-[13px]">
             {perk.TriggerType} - {perk.MoveType}
         </p>
+        {#if isAdd}
+            <button
+                class="btn btn-icon-sm preset-filled-success-500"
+                onclick={() => {
+                    callback(perk.Name);
+                }}
+            >
+                +
+            </button>
+        {:else}
+            <button
+                class="btn btn-icon-sm preset-filled-error-500"
+                onclick={() => {
+                    callback(perk.Name);
+                }}
+            >
+                -
+            </button>
+        {/if}
     </div>
     <div>
         {perk.Description.replaceAll(

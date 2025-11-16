@@ -3,6 +3,7 @@
     import type { enemyPatterns, enemy } from "./additionalInfo";
     import { AllPerks, type Perk } from "./perks";
     import PerksComponent from "./perksComponent.svelte";
+    import { getRandomNum, getRandomStr } from "$lib/simpleMath";
 
     interface Props {
         enemyP: enemyPatterns;
@@ -22,20 +23,46 @@
         DicePools: "",
     });
     let enemyName: string = $state("<Adversary>");
-    let localPerks: Array<Perk> = $derived.by(() => {
-        let allP: Array<Perk> = [];
+    let localAllPerks: Array<Perk> = $state([]);
+    let selectedPerks: Array<Perk | undefined> = $state(enemyP.Perks);
+
+    randomizeEnemy();
+    updatePerks();
+
+    function callbackUpdateList(perkName: string) {
+        console.log(perkName);
+        let found = -1;
+        selectedPerks.forEach((val, idx) => {
+            if (val?.Name === perkName) {
+                found = idx;
+            }
+        });
+        if (found !== -1) {
+            localAllPerks.push(selectedPerks.at(found)!);
+            delete selectedPerks[found];
+        } else {
+            localAllPerks.forEach((val, idx) => {
+                if (val?.Name === perkName) {
+                    found = idx;
+                }
+            });
+            selectedPerks.push(localAllPerks.at(found)!);
+            delete localAllPerks[found];
+        }
+    }
+
+    function updatePerks() {
+        localAllPerks = [];
         let names: Set<string> = new SvelteSet<string>();
-        enemyP.Perks.forEach((val) => {
+        selectedPerks.forEach((val) => {
             names.add(val!.Name);
         });
         AllPerks.forEach((val) => {
             if (!names.has(val.Name)) {
-                allP.push(val);
+                localAllPerks.push(val);
             }
         });
-        return allP;
-    });
-    randomizeEnemy();
+    }
 
     function randomizeEnemy() {
         localEnemy.Dificulty = getRandomNum(enemyP.Dificulty);
@@ -46,13 +73,6 @@
         localEnemy.ATK = getRandomNum(enemyP.ATK);
         localEnemy.DicePools = getRandomStr(enemyP.DicePools);
         localEnemy = localEnemy;
-    }
-
-    function getRandomNum(items: Array<number>) {
-        return items[Math.floor(Math.random() * items.length)];
-    }
-    function getRandomStr(items: Array<string>) {
-        return items[Math.floor(Math.random() * items.length)];
     }
 </script>
 
@@ -70,7 +90,7 @@
     <div class="flex gap-2">
         <label class="label mb-2">
             <span>Difficulty</span>
-            <select class="select" bind:value={localEnemy.Dificulty}>
+            <select class="select pl-2" bind:value={localEnemy.Dificulty}>
                 {#each enemyP.Dificulty as dif, idx (idx)}
                     <option value={dif}>{dif}</option>
                 {/each}
@@ -78,7 +98,7 @@
         </label>
         <label class="label mb-2">
             <span>Major Threshold</span>
-            <select class="select" bind:value={localEnemy.MajorThreshold}>
+            <select class="select pl-2" bind:value={localEnemy.MajorThreshold}>
                 {#each enemyP.MajorThreshold as major, idx (idx)}
                     <option value={major}>{major}</option>
                 {/each}
@@ -86,7 +106,7 @@
         </label>
         <label class="label mb-2">
             <span>Severe Threshold</span>
-            <select class="select" bind:value={localEnemy.SevereThreshold}>
+            <select class="select pl-2" bind:value={localEnemy.SevereThreshold}>
                 {#each enemyP.SevereThreshold as severe, idx (idx)}
                     <option value={severe}>{severe}</option>
                 {/each}
@@ -96,7 +116,7 @@
     <div class="flex gap-2">
         <label class="label mb-2">
             <span>HP</span>
-            <select class="select" bind:value={localEnemy.HP}>
+            <select class="select pl-2" bind:value={localEnemy.HP}>
                 {#each enemyP.HP as hp, idx (idx)}
                     <option value={hp}>{hp}</option>
                 {/each}
@@ -104,7 +124,7 @@
         </label>
         <label class="label mb-2">
             <span>Stress</span>
-            <select class="select" bind:value={localEnemy.Stress}>
+            <select class="select pl-2" bind:value={localEnemy.Stress}>
                 {#each enemyP.Stress as stress, idx (idx)}
                     <option value={stress}>{stress}</option>
                 {/each}
@@ -112,7 +132,7 @@
         </label>
         <label class="label mb-2">
             <span>ATK</span>
-            <select class="select" bind:value={localEnemy.ATK}>
+            <select class="select pl-2" bind:value={localEnemy.ATK}>
                 {#each enemyP.ATK as atk, idx (idx)}
                     <option value={atk}>{atk}</option>
                 {/each}
@@ -120,7 +140,7 @@
         </label>
         <label class="label mb-2">
             <span>Dice Pool</span>
-            <select class="select" bind:value={localEnemy.DicePools}>
+            <select class="select pl-2" bind:value={localEnemy.DicePools}>
                 {#each enemyP.DicePools as dp, idx (idx)}
                     <option value={dp}>{dp}</option>
                 {/each}
@@ -128,29 +148,33 @@
         </label>
     </div>
     <div class="grid grid-cols-2 gap-10">
-        <div class="col-span-1">
+        <div class="col-span-1 overflow-scroll max-h-[600px] pr-3">
             <h4 class="h4 text-center">Common Perks</h4>
             <div>
-                {#each enemyP.Perks as p, idx (idx)}
+                {#each selectedPerks as p, idx (idx)}
                     {#if p}
                         <PerksComponent
                             perk={p}
                             adversaryName={enemyName}
                             adversaryTier={tier}
+                            callback={callbackUpdateList}
+                            isAdd={false}
                         />
                     {/if}
                 {/each}
             </div>
         </div>
-        <div class="col-span-1">
+        <div class="col-span-1 overflow-scroll max-h-[600px] pr-3">
             <h4 class="h4 text-center">All Perks</h4>
             <div>
-                {#each localPerks as p, idx (idx)}
+                {#each localAllPerks as p, idx (idx)}
                     {#if p}
                         <PerksComponent
                             perk={p}
                             adversaryName={enemyName}
                             adversaryTier={tier}
+                            callback={callbackUpdateList}
+                            isAdd={true}
                         />
                     {/if}
                 {/each}
