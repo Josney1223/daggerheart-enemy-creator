@@ -8,9 +8,10 @@
     interface Props {
         enemyP: enemyPatterns;
         tier: number;
+        enemyType: string;
     }
 
-    let { enemyP, tier }: Props = $props();
+    let { enemyP, tier, enemyType }: Props = $props();
 
     let localEnemy: enemy = $state({
         Dificulty: 0,
@@ -22,7 +23,7 @@
         DamageAverage: "",
         DicePools: "",
     });
-    let enemyName: string = $state("<Adversary>");
+    let enemyName: string = $state("<" + enemyType + ">");
     let localAllPerks: Array<Perk> = $state([]);
     let selectedPerks: Array<Perk | undefined> = $state(enemyP.Perks);
 
@@ -30,7 +31,6 @@
     updatePerks();
 
     function callbackUpdateList(perkName: string) {
-        console.log(perkName);
         let found = -1;
         selectedPerks.forEach((val, idx) => {
             if (val?.Name === perkName) {
@@ -77,12 +77,15 @@
 </script>
 
 <div>
-    <div>
+    <div class="flex gap-3 align-bottom">
         <label class="label mb-2">
             <span> Adversary Name </span>
             <input class="input" bind:value={enemyName} />
         </label>
-        <button class="btn preset-filled-primary-500" onclick={randomizeEnemy}>
+        <button
+            class="btn preset-filled-primary-500 max-h-9 mt-6"
+            onclick={randomizeEnemy}
+        >
             Randomize
         </button>
     </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { defaultEnemys } from "./additionalInfo";
+    import { adversaryTips } from "./tips";
     import EnemyComponent from "./enemyComponent.svelte";
 
     const adversarieTypes: Array<string> = [...defaultEnemys.keys()];
@@ -15,15 +16,15 @@
 <div class="grid grid-cols-3 mb-10 scheme-light">
     <div class="col-span-1"></div>
     <div class="col-span-1">
-        <label class="label">
-            <span>Type</span>
-            <select class="select pl-2" bind:value={choosenEnemyType}>
-                {#each adversarieTypes as adv, idx (idx)}
-                    <option value={adv}>{adv}</option>
-                {/each}
-            </select>
-        </label>
-        {#if choosenEnemyType}
+        <div class="flex gap-3">
+            <label class="label">
+                <span>Type</span>
+                <select class="select pl-2" bind:value={choosenEnemyType}>
+                    {#each adversarieTypes as adv, idx (idx)}
+                        <option value={adv}>{adv}</option>
+                    {/each}
+                </select>
+            </label>
             <label class="label">
                 <span>Tier</span>
                 <select class="select pl-2" bind:value={choosenEnemyTier}>
@@ -32,20 +33,24 @@
                     {/each}
                 </select>
             </label>
-        {/if}
+        </div>
         {#if choosenEnemyType && choosenEnemyTier !== 0}
             <EnemyComponent
                 enemyP={defaultEnemys
                     .get(choosenEnemyType)!
                     .get(choosenEnemyTier)!}
                 tier={choosenEnemyTier}
+                enemyType={choosenEnemyType}
             />
         {/if}
     </div>
     <div class="col-span-1">
-        <div class="flex justify-around">
+        <div class="flex flex-col justify-around card m-5">
             {#if choosenEnemyType}
                 <h5 class="h5">Help with the {choosenEnemyType}</h5>
+                {#each adversaryTips.get(choosenEnemyType)! as tips, idx (idx)}
+                    <div>- {tips}</div>
+                {/each}
             {/if}
         </div>
     </div>
