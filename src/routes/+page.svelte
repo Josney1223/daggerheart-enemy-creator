@@ -1,18 +1,11 @@
 <script lang="ts">
     import { defaultEnemys } from "./additionalInfo";
-    const adversarieTypes: Array<string> = [
-        "Bruiser",
-        "Horde",
-        "Leader",
-        "Minions",
-        "Ranged",
-        "Skulks",
-        "Solo",
-        "Standard",
-        "Support",
-    ];
+
+    const adversarieTypes: Array<string> = [...defaultEnemys.keys()];
+    const adversarieTiers: Array<number> = [1, 2, 3, 4];
 
     let choosenEnemyType: string = $state("");
+    let choosenEnemyTier: number = $state(0);
 </script>
 
 <div class="flex justify-around mt-5 mb-5">
@@ -27,7 +20,17 @@
             {/each}
         </select>
         {#if choosenEnemyType}
-            <div>{defaultEnemys.get(choosenEnemyType)!.get(1)!.Dificulty}</div>
+            <select class="select" bind:value={choosenEnemyTier}>
+                {#each adversarieTiers as adv, idx (idx)}
+                    <option value={adv}>{adv}</option>
+                {/each}
+            </select>
+        {/if}
+        {#if choosenEnemyTier && choosenEnemyTier !== 0}
+            <div>
+                {defaultEnemys.get(choosenEnemyType)!.get(choosenEnemyTier)!
+                    .Dificulty}
+            </div>
         {/if}
     </div>
     <div class="col-span-2"></div>

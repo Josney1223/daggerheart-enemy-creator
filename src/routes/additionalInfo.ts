@@ -11,6 +11,16 @@ interface enemy {
 
 const defaultEnemys: Map<string, Map<number, enemy>> = new Map()
 
+// "Bruiser",
+// "Horde",
+// "Leader",
+// "Minions",
+// "Ranged",
+// "Skulks",
+// "Solo",
+// "Standard",
+// "Support",
+
 const bruiser: Map<number, enemy> = new Map()
 
 bruiser.set(1, {
