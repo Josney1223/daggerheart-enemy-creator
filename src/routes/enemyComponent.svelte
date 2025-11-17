@@ -1,7 +1,7 @@
 <script lang="ts">
     import { SvelteSet } from "svelte/reactivity";
     import type { enemyPatterns, enemy } from "./additionalInfo";
-    import { AllPerks, type Perk } from "./perks";
+    import { AllPerks, sortPerkList, type Perk } from "./perks";
     import PerksComponent from "./perksComponent.svelte";
     import { getRandomNum, getRandomStr } from "$lib/simpleMath";
 
@@ -13,6 +13,7 @@
 
     let { enemyP, tier, enemyType }: Props = $props();
 
+    const perksTypes: Array<string> = ["All", "Normal", "Soft"];
     let localEnemy: enemy = $state({
         Dificulty: 0,
         MajorThreshold: 0,
@@ -23,9 +24,11 @@
         DamageAverage: "",
         DicePools: "",
     });
-    let enemyName: string = $state("<" + enemyType + ">");
+    let enemyName: string = $state(enemyType + "?");
     let localAllPerks: Array<Perk> = $state([]);
-    let selectedPerks: Array<Perk | undefined> = $state(enemyP.Perks);
+    let selectedPerks: Array<Perk> = $state(sortPerkList(enemyP.Perks));
+    let chosenAllPerkType: string = $state("All");
+    let chosenSelectedPerkType: string = $state("All");
 
     randomizeEnemy();
     updatePerks();
@@ -49,11 +52,14 @@
             selectedPerks.push(localAllPerks.at(found)!);
             delete localAllPerks[found];
         }
+        localAllPerks = sortPerkList(localAllPerks);
+        selectedPerks = sortPerkList(selectedPerks);
     }
 
     function updatePerks() {
         localAllPerks = [];
         let names: Set<string> = new SvelteSet<string>();
+        selectedPerks = sortPerkList(enemyP.Perks);
         selectedPerks.forEach((val) => {
             names.add(val!.Name);
         });
@@ -62,6 +68,7 @@
                 localAllPerks.push(val);
             }
         });
+        localAllPerks = sortPerkList(localAllPerks);
     }
 
     function randomizeEnemy() {
@@ -152,10 +159,24 @@
     </div>
     <div class="grid grid-cols-2 gap-10">
         <div class="col-span-1 overflow-scroll max-h-[600px] pr-3">
-            <h4 class="h4 text-center">Common Perks</h4>
+            <h4 class="h4 text-center">{enemyName} Perks</h4>
             <div>
+                <nav
+                    class="btn-group preset-outlined-surface-200-800 flex-row p-2 flex justify-center"
+                >
+                    {#each perksTypes as perk (perk)}
+                        <button
+                            type="button"
+                            class="btn-sm capitalize"
+                            class:preset-filled={chosenSelectedPerkType == perk}
+                            onclick={() => (chosenSelectedPerkType = perk)}
+                        >
+                            {perk}
+                        </button>
+                    {/each}
+                </nav>
                 {#each selectedPerks as p, idx (idx)}
-                    {#if p}
+                    {#if p && (p.MoveType === chosenSelectedPerkType || chosenSelectedPerkType === "All")}
                         <PerksComponent
                             perk={p}
                             adversaryName={enemyName}
@@ -170,8 +191,22 @@
         <div class="col-span-1 overflow-scroll max-h-[600px] pr-3">
             <h4 class="h4 text-center">All Perks</h4>
             <div>
+                <nav
+                    class="btn-group preset-outlined-surface-200-800 flex-row p-2 flex justify-center"
+                >
+                    {#each perksTypes as perk (perk)}
+                        <button
+                            type="button"
+                            class="btn-sm capitalize"
+                            class:preset-filled={chosenAllPerkType == perk}
+                            onclick={() => (chosenAllPerkType = perk)}
+                        >
+                            {perk}
+                        </button>
+                    {/each}
+                </nav>
                 {#each localAllPerks as p, idx (idx)}
-                    {#if p}
+                    {#if p && (p.MoveType === chosenAllPerkType || chosenAllPerkType === "All")}
                         <PerksComponent
                             perk={p}
                             adversaryName={enemyName}

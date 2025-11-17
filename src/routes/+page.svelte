@@ -1,13 +1,17 @@
 <script lang="ts">
-    import { defaultEnemys } from "./additionalInfo";
+    import { defaultEnemys, type enemyPatterns } from "./additionalInfo";
     import { adversaryTips } from "./tips";
     import EnemyComponent from "./enemyComponent.svelte";
 
     const adversarieTypes: Array<string> = [...defaultEnemys.keys()];
     const adversarieTiers: Array<number> = [1, 2, 3, 4];
 
-    let choosenEnemyType: string = $state("");
-    let choosenEnemyTier: number = $state(0);
+    let choosenEnemyType: string = $state("Bruiser");
+    let choosenEnemyTier: number = $state(1);
+
+    let enemyData: enemyPatterns = $derived(
+        defaultEnemys.get(choosenEnemyType)!.get(choosenEnemyTier)!,
+    );
 </script>
 
 <div class="flex justify-around mt-5 mb-5 scheme-light">
@@ -36,9 +40,7 @@
         </div>
         {#if choosenEnemyType && choosenEnemyTier !== 0}
             <EnemyComponent
-                enemyP={defaultEnemys
-                    .get(choosenEnemyType)!
-                    .get(choosenEnemyTier)!}
+                enemyP={enemyData}
                 tier={choosenEnemyTier}
                 enemyType={choosenEnemyType}
             />

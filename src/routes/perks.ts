@@ -5,6 +5,18 @@ interface Perk {
     MoveType: string,
 }
 
+export function sortPerkList(perkList: Array<Perk>) {
+    return perkList.sort((obj1, obj2) => {
+        if (obj1!.Name > obj2!.Name) {
+            return 1;
+        }
+        if (obj1!.Name < obj2!.Name) {
+            return -1;
+        }
+        return 0;
+    });
+}
+
 const AllPerks: Map<string, Perk> = new Map();
 
 AllPerks.set("Momentum", {
@@ -35,11 +47,11 @@ AllPerks.set("Terrifying", {
     Description: "When the <Adversary> makes a successful attack, all PCs within Far range lose a Hope and you gain a Fear."
 })
 
-AllPerks.set("Horde (<damage>)", {
-    Name: "Horde (<damage>)",
+AllPerks.set("Horde", {
+    Name: "Horde",
     TriggerType: "Passive",
     MoveType: "Normal",
-    Description: "When the <Adversary> have marked half or more of their HP, their standard attack deals <damage> physical damage instead"
+    Description: "When the <Adversary> have marked half or more of their HP, their standard attack deals half physical damage instead"
 })
 
 AllPerks.set("Relentless (X)", {
@@ -215,6 +227,55 @@ AllPerks.set("Cleanse", {
     TriggerType: "Action",
     MoveType: "Soft",
     Description: "The <Adversary> clears a condition on themselves or someone else."
+})
+
+AllPerks.set("Overwhelming Force", {
+    Name: "Overwhelming Force",
+    TriggerType: "Passive",
+    MoveType: "Normal",
+    Description: "Targets who mark HP from the <Adversary>’s standard attack are knocked back to Very Close range"
+})
+
+AllPerks.set("Death Quake", {
+    Name: "Death Quake",
+    TriggerType: "Reaction",
+    MoveType: "Normal",
+    Description: "When the <Adversary> marks their last HP, the <insert fiction reason> ruptures in an explosion of force. All targets within Close range must succeed on an Instinct Reaction Roll or take <Tier>d8+1 magic damage."
+})
+
+AllPerks.set("Rampage", {
+    Name: "Rampage",
+    TriggerType: "Reaction",
+    MoveType: "Normal",
+    Description: "When the <Adversary> marks 2 or more HP, they can rampage. Move the Ogre to a point within Close range and deal 2x<Tier>d6+3 direct physical damage to all targets in their path."
+})
+
+AllPerks.set("Ground Slam", {
+    Name: "Ground Slam",
+    TriggerType: "Action",
+    MoveType: "Normal",
+    Description: "Slam the ground, knocking all targets within Very Close range back to Far range. Each target knocked back this way must mark a Stress."
+})
+
+AllPerks.set("In Your Face", {
+    Name: "In Your Face",
+    TriggerType: "Passive",
+    MoveType: "Normal",
+    Description: "All targets within Melee range have disadvantage on attacks against targets other than the <Adversary>."
+})
+
+AllPerks.set("Adrenaline Burst", {
+    Name: "Adrenaline Burst",
+    TriggerType: "Action",
+    MoveType: "Normal",
+    Description: "Once per scene, spend a Fear to clear 2 HP and 2 Stress."
+})
+
+AllPerks.set("Regeneration", {
+    Name: "Regeneration",
+    TriggerType: "Action",
+    MoveType: "Normal",
+    Description: "If the <Adversary> has any marked HP, spend a Fear to clear a HP and <do something else>."
 })
 
 export { AllPerks, type Perk }
